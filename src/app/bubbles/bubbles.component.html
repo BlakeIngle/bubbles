@@ -2,5 +2,6 @@
        (change)="onFileChange($event);">
 
 <div class="container">
-    <img #myImg>
+    <img #myImg
+         [ngClass]="{'fit': fitImg}">
 </div>
