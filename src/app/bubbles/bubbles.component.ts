@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import * as p5 from 'p5';
+import { Circle } from '../models/circle.model';
 
 @Component({
   selector: 'app-bubbles',
@@ -15,7 +16,7 @@ export class BubblesComponent implements OnInit {
 
   loadedImage;
 
-  circlePools; //all circles go into a pool
+  circlePools: Circle[][][]; //all circles go into a pool
   poolColNum = 10; // 10 columns
   poolRowNum = 6; // 6 rows
 
@@ -87,24 +88,17 @@ export class BubblesComponent implements OnInit {
           this.poolRowNum = 10;
         }
 
-        this.circlePools = [];
-        for (let i = 0; i < this.poolRowNum; i++) {
-          this.circlePools.push([])
-          for (let j = 0; j < this.poolColNum; j++) {
-            this.circlePools[i].push([])
-          }
-        }
+        this.circlePools = this.createPools();
 
-        this.circlePools.forEach((row, i) => {
-          row.forEach((pool, j) => {
-            this.getAllNeighborPools(i, j)
-          });
-        });
       }
 
       p.draw = () => {
-        let img = this.imgTag.nativeElement;
-        p.rect(img.width - 30, img.height - 30, 30, 30)
+        if (this.finished) {
+          return;
+        }
+        this.addNewCircles();
+        this.growCircles();
+        this.drawCircles(p);
       }
 
       p.windowResized = () => {
@@ -112,6 +106,73 @@ export class BubblesComponent implements OnInit {
         p.resizeCanvas(element.width, element.height);
       }
     });
+  }
+
+  createPools(): Circle[][][] {
+    let pools: Circle[][][] = [];
+    for (let i = 0; i < this.poolRowNum; i++) {
+      pools.push([])
+      for (let j = 0; j < this.poolColNum; j++) {
+        pools[i].push([])
+      }
+    }
+    return pools;
+  }
+
+  addNewCircles() {
+
+    let newEachFrame = 100; // smaller number = bigger circles
+    let maxAttempts = 10000; // more attempts = less empty space
+
+    for (let i = 0; i < newEachFrame; i++) {
+      let randomX = Math.floor(Math.random() * this.imgWidth);
+      let randomY = Math.floor(Math.random() * this.imgHeight);
+      this.pushToPool(randomX, randomY);
+    }
+  }
+
+  pushToPool(x, y) {
+    let rowPoolSize = this.imgHeight / this.circlePools.length;
+    let rowPool = y / rowPoolSize
+    rowPool = Math.ceil(rowPool) - 1;
+    if (rowPool >= this.circlePools.length) {
+      // not a valid pool
+      console.log(rowPool);
+      rowPool = this.circlePools.length - 1;
+    } else if (rowPool < 0) {
+      rowPool = 0;
+    }
+
+    let colPoolSize = this.imgWidth / this.circlePools[0].length;
+    let colPool = x / colPoolSize
+    colPool = Math.ceil(colPool) - 1;
+    if (colPool >= this.circlePools[0].length) {
+      // not a valid pool
+      console.log(colPool);
+      colPool = this.circlePools[0].length - 1;
+    } else if (colPool < 0) {
+      colPool = 0;
+    }
+
+    this.circlePools[rowPool][colPool].push(new Circle(x, y));
+  }
+
+  growCircles() {
+
+  }
+
+  drawCircles(p) {
+    for (let row of this.circlePools) {
+      for (let pool of row) {
+        for (let circle of pool) {
+          let canvasCoordinates = this.getCanvasXY(circle, p);
+
+          let x = canvasCoordinates.x // where to draw on canvas
+          let y = canvasCoordinates.y // where to draw on canvas
+          p.circle(x, y, circle.r * 2);
+        }
+      }
+    }
   }
 
   getAllNeighborPools(_i, _j): any[] {
@@ -137,6 +198,17 @@ export class BubblesComponent implements OnInit {
     }
 
     return neighbors;
+  }
+
+  getCanvasXY(circle: Circle, p) {
+    let canvasX = p.map(circle.x, 0, this.imgWidth, 0, this.imgTag.nativeElement.width);
+    let canvasY = p.map(circle.y, 0, this.imgHeight, 0, this.imgTag.nativeElement.height);
+
+    return { x: canvasX, y: canvasY }
+  }
+
+  map(n: number, minInput: number, maxInput: number, minOutput: number, maxOutput: number): number {
+    return ((n - minInput) / (maxInput - minInput)) * (maxOutput - minOutput) + minOutput;
   }
 
 }

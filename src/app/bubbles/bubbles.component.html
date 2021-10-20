@@ -1,7 +1,10 @@
 <input type="file"
        (change)="onFileChange($event);">
 
+<button type="button"
+        (click)="finished = true">STOP!</button>
+
 <div class="container">
-    <img #myImg
-         [ngClass]="{'fit': fitImg}">
+       <img #myImg
+            [ngClass]="{'fit': fitImg}">
 </div>
