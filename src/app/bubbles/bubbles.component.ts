@@ -96,7 +96,7 @@ export class BubblesComponent implements OnInit {
         if (this.finished) {
           return;
         }
-        this.addNewCircles();
+        this.addNewCircles(p);
         this.growCircles();
         this.drawCircles(p);
       }
@@ -119,19 +119,29 @@ export class BubblesComponent implements OnInit {
     return pools;
   }
 
-  addNewCircles() {
+  addNewCircles(p) {
 
     let newEachFrame = 100; // smaller number = bigger circles
     let maxAttempts = 10000; // more attempts = less empty space
+    let attempt = 1;
 
     for (let i = 0; i < newEachFrame; i++) {
+      if (attempt > maxAttempts) {
+        this.finished = true; // stop drawing
+      }
       let randomX = Math.floor(Math.random() * this.imgWidth);
       let randomY = Math.floor(Math.random() * this.imgHeight);
-      this.pushToPool(randomX, randomY);
+      if (this.pushToPool(randomX, randomY, p)) {
+        // pushed successfully
+      } else {
+        // failed to push (x, y position invalid)
+        attempt++;
+        i--;
+      }
     }
   }
 
-  pushToPool(x, y) {
+  pushToPool(x, y, p): boolean {
     let rowPoolSize = this.imgHeight / this.circlePools.length;
     let rowPool = y / rowPoolSize
     rowPool = Math.ceil(rowPool) - 1;
@@ -154,7 +164,53 @@ export class BubblesComponent implements OnInit {
       colPool = 0;
     }
 
-    this.circlePools[rowPool][colPool].push(new Circle(x, y));
+    if (!this.positionForNewCircleIsValid(x, y, rowPool, colPool, p)) {
+      // not valid x, y position
+      return false;
+    } else {
+      let c = new Circle(x, y)
+      this.circlePools[rowPool][colPool].push(c);
+      return true;
+    }
+  }
+
+  positionForNewCircleIsValid(x, y, rowPool, colPool, p): boolean {
+
+    var isValid = true;
+
+    // get all neighbor pools but NOT the actual circle pool
+    let neighborPools = this.getAllNeighborPools(rowPool, colPool);
+
+    //check all circles to not draw a circle in another circle
+    const positionValidInPool = (pool: Circle[]): boolean => {
+
+      let validPos = true;
+
+      for (let c of pool) {
+        // check if x, y is in another circle
+        var d = p.dist(x, y, c.x, c.y); //distance from center of each circle
+        if (d < c.r + 2) {
+          //spot is in another circle
+          validPos = false;
+          break;
+        }
+      }
+      return validPos
+    }
+
+    // check actual pool first (most likely)
+    if (!positionValidInPool(this.circlePools[rowPool][colPool])) {
+      return false; // invalid x, y position
+    }
+
+    // check all neighbor pools second just in case its on the edge
+    for (let pool of neighborPools) {
+      if (!positionValidInPool(pool)) {
+        return false; // invalid x, y position
+      }
+    }
+
+    return isValid; // circle did not intersect another circle
   }
 
   growCircles() {
