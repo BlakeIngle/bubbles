@@ -93,6 +93,7 @@ export class BubblesComponent implements OnInit {
 
       p.draw = () => {
         if (this.finished) {
+          console.log("finished")
           return;
         }
         this.addNewCircles(p);
@@ -283,7 +284,14 @@ export class BubblesComponent implements OnInit {
 
     let x = canvasCoordinates.x // where to draw on canvas
     let y = canvasCoordinates.y // where to draw on canvas
-    p.circle(x, y, circle.r * 2);
+
+    let adjustedR = this.getRadiusScaledForCanvas(circle.r); // scale radius with window size
+
+    p.noStroke();
+    let color = this.loadedImage.get(circle.x, circle.y);
+    p.fill(color);
+
+    p.circle(x, y, adjustedR * 2);
   }
 
   getAllNeighborPools(_i, _j): any[] {
