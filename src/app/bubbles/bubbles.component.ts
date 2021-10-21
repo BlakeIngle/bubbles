@@ -46,7 +46,6 @@ export class BubblesComponent implements OnInit {
       var fileReader: FileReader = new FileReader();
       fileReader.onloadend = (e) => {
         let img = e.target.result;
-        console.log(fileReader)
 
         this.imgTag.nativeElement.onload = () => {
           let imgElement = this.imgTag.nativeElement
@@ -97,7 +96,7 @@ export class BubblesComponent implements OnInit {
           return;
         }
         this.addNewCircles(p);
-        this.growCircles();
+        this.growCircles(p);
         this.drawCircles(p);
       }
 
@@ -147,7 +146,6 @@ export class BubblesComponent implements OnInit {
     rowPool = Math.ceil(rowPool) - 1;
     if (rowPool >= this.circlePools.length) {
       // not a valid pool
-      console.log(rowPool);
       rowPool = this.circlePools.length - 1;
     } else if (rowPool < 0) {
       rowPool = 0;
@@ -158,7 +156,6 @@ export class BubblesComponent implements OnInit {
     colPool = Math.ceil(colPool) - 1;
     if (colPool >= this.circlePools[0].length) {
       // not a valid pool
-      console.log(colPool);
       colPool = this.circlePools[0].length - 1;
     } else if (colPool < 0) {
       colPool = 0;
@@ -213,22 +210,80 @@ export class BubblesComponent implements OnInit {
     return isValid; // circle did not intersect another circle
   }
 
-  growCircles() {
+  growCircles(p) {
+    for (let row in this.circlePools) {
+      for (let col in this.circlePools[row]) {
+        // row col :: i j
+        let pool = this.circlePools[row][col];
+        // check all circles in all pools
+        for (let c of pool) {
+          this.handleAllCollisionsForCircle(c, Number(row), Number(col), p);
+        }
+      }
+    }
+  }
 
+  handleAllCollisionsForCircle(c: Circle, row: number, col: number, p) {
+    if (c.growing) {
+      // check if circle is touching the edge of the canvas
+      if (c.edges(this.imgWidth, this.imgHeight)) {
+        c.growing = false;
+      } else {
+        // check pool and all neighbor pools for collisions
+        let pool = this.circlePools[row][col];
+        this.handleAllCollisionsForCircleInOnePool(c, pool, p)
+        let neighborPools = this.getAllNeighborPools(row, col);
+
+        for (let neighborPool of neighborPools) {
+          if (c.growing) {
+            this.handleAllCollisionsForCircleInOnePool(c, neighborPool, p);
+          } else {
+            break;
+          }
+        }
+        if (c.growing) {
+          c.grow(); // update
+        }
+      }
+    } else {
+      return; // not growing
+    }
+  }
+
+  handleAllCollisionsForCircleInOnePool(c, pool, p) {
+
+    for (let otherC of pool) {
+
+      if (c != otherC) { // do not compare circle to itself
+
+        let d = p.dist(c.x, c.y, otherC.x, otherC.y);
+        if (c.r + otherC.r >= d) {
+          // if r1 + r2 >= distance from centers
+          // then the circles touch/overlap
+          c.growing = false;
+          otherC.growing = false;
+          return; // done. circle collided
+        }
+      }
+    }
   }
 
   drawCircles(p) {
     for (let row of this.circlePools) {
       for (let pool of row) {
         for (let circle of pool) {
-          let canvasCoordinates = this.getCanvasXY(circle, p);
-
-          let x = canvasCoordinates.x // where to draw on canvas
-          let y = canvasCoordinates.y // where to draw on canvas
-          p.circle(x, y, circle.r * 2);
+          this.drawOneCircle(circle, p);
         }
       }
     }
+  }
+
+  drawOneCircle(circle, p) {
+    let canvasCoordinates = this.getCanvasXY(circle, p);
+
+    let x = canvasCoordinates.x // where to draw on canvas
+    let y = canvasCoordinates.y // where to draw on canvas
+    p.circle(x, y, circle.r * 2);
   }
 
   getAllNeighborPools(_i, _j): any[] {
