@@ -19,3 +19,28 @@
        min="0"
        max="0.1"
        step="0.000001">
+
+
+<input type="range"
+       [(ngModel)]="minRadius"
+       min="1"
+       max="100"
+       step="1">
+
+<input type="range"
+       [(ngModel)]="maxRadius"
+       min="10"
+       max="1000"
+       step="1">
+
+<input type="range"
+       [(ngModel)]="innerRadius"
+       min="0"
+       max="1000"
+       step="0.1">
+
+<input type="range"
+       [(ngModel)]="outerRadius"
+       min="1"
+       max="1000"
+       step="0.1">
