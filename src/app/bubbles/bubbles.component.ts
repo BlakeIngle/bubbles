@@ -104,6 +104,7 @@ export class BubblesComponent implements OnInit {
       p.windowResized = () => {
         let element = this.imgTag.nativeElement;
         p.resizeCanvas(element.width, element.height);
+        this.drawCircles(p); // draw on resize, even when finished
       }
     });
   }
