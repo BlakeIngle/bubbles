@@ -318,6 +318,10 @@ export class BubblesComponent implements OnInit {
     return { x: canvasX, y: canvasY }
   }
 
+  getRadiusScaledForCanvas(r) {
+    return (r / this.imgWidth) * this.imgTag.nativeElement.width
+  }
+
   map(n: number, minInput: number, maxInput: number, minOutput: number, maxOutput: number): number {
     return ((n - minInput) / (maxInput - minInput)) * (maxOutput - minOutput) + minOutput;
   }
