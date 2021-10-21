@@ -8,8 +8,8 @@ import * as p5 from 'p5';
 })
 export class CircleWarpComponent implements OnInit {
 
-  layerCount: number = 10; // how many circles in a stack
-  ringCount: number = 10; // how many circles in a circle
+  layerCount: number = 100; // how many circles in a stack
+  ringCount: number = 5; // how many circles in a circle
 
   radius: number = 100; // radius of total circle
 
@@ -20,7 +20,10 @@ export class CircleWarpComponent implements OnInit {
   largeVelocity: number = 0.00001; // velocity of largest circle in a stack
   // large velocity < small velocity - smaller objects have less mass
 
-  layers: { r: number, theta: number }[][];
+  layers: {
+    small: { r: number, theta: number },
+    large: { r: number, theta: number }
+  }
 
   constructor() { }
 
@@ -37,24 +40,17 @@ export class CircleWarpComponent implements OnInit {
 
       p.setup = () => {
         p.createCanvas(window.innerWidth, window.innerHeight);
-        this.layers = [];
-        for (let i = 0; i < this.layerCount; i++) {
-          this.layers.push([])
-          for (let j = 0; j < this.ringCount; j++) {
-            let r = p.map(i, 0, this.layerCount - 1, this.minRadius, this.maxRadius);
-            let theta = ((Math.PI * 2) / this.ringCount) * j;
-
-            this.layers[i].push({ r: r, theta: theta });
-          }
-        }
+        this.layers = {
+          small: { r: this.minRadius, theta: 0 },
+          large: { r: this.maxRadius, theta: 0 }
+        };
       }
 
       p.draw = () => {
         p.background(0);
-        for (let i = 0; i < this.layerCount - 1; i++) {
-          this.moveLayer(i, p);
-          this.drawLayer(i, p);
-        }
+        this.moveLayers(p);
+        this.drawAllLayers(p);
+
       }
 
       p.windowResized = () => {
@@ -63,27 +59,32 @@ export class CircleWarpComponent implements OnInit {
     });
   }
 
-  moveLayer(i, p) {
-    // rotate all circles based on layer index
-    let layer = this.layers[i];
-    let velocity = p.map(i, 0, this.layers.length, this.smallVelocity, this.largeVelocity)
-    for (let circle of layer) {
-      circle.theta = (circle.theta + velocity) % (Math.PI * 2)
-    }
+  moveLayers(p) {
+    this.layers.small.theta = (this.layers.small.theta + this.smallVelocity) //% (Math.PI * 2);
+    this.layers.large.theta = (this.layers.large.theta + this.largeVelocity) //% (Math.PI * 2);
+    // rotate % 2pi
+    // modulating by 2PI causes snapping
   }
 
-  drawLayer(i, p) {
-    // draw all circles in a layer based on index (i)
+  drawAllLayers(p) {
+    // draw all circles in a layer based on number of layers
     p.push();
     p.translate(window.innerWidth / 2, window.innerHeight / 2)
     p.fill(255, 5);
     p.noStroke();
-    let layer = this.layers[i];
-    for (let circle of layer) {
-      let x = this.radius * p.cos(circle.theta);
-      let y = this.radius * p.sin(circle.theta);
-      p.circle(x, y, circle.r)
+
+    for (let i = 0; i < this.layerCount; i++) {
+      // draw one layer
+      let layerTheta = p.map(i, 0, this.layerCount - 1, this.layers.small.theta, this.layers.large.theta);
+      let layerR = p.map(i, 0, this.layerCount - 1, this.layers.small.r, this.layers.large.r);
+      for (let j = 0; j < this.ringCount; j++) {
+        let circleTheta = (Math.PI * 2 / this.ringCount) * j
+        let x = this.radius * p.sin(circleTheta + layerTheta);
+        let y = this.radius * p.cos(circleTheta + layerTheta);
+        p.circle(x, y, layerR)
+      }
     }
+
     p.pop();
   }
 
