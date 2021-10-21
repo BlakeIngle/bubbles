@@ -6,12 +6,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BubblesComponent } from './bubbles/bubbles.component';
 import { CircleWarpComponent } from './circle-warp/circle-warp.component';
+import { HomePageComponent } from './home-page/home-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BubblesComponent,
-    CircleWarpComponent
+    CircleWarpComponent,
+    HomePageComponent
   ],
   imports: [
     BrowserModule,
