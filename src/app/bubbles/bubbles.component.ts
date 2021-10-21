@@ -94,6 +94,7 @@ export class BubblesComponent implements OnInit {
       p.draw = () => {
         if (this.finished) {
           console.log("finished")
+          p.noLoop();
           return;
         }
         this.addNewCircles(p);
