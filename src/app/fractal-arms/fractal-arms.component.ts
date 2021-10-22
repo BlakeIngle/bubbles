@@ -8,8 +8,8 @@ import * as p5 from 'p5';
 })
 export class FractalArmsComponent implements OnInit {
 
-  totalArms: number = 64;
-  armSegments: number = 100;
+  totalArms: number = 80;
+  armSegments: number = 40;
 
   totalArmLength: number = 100; // each segment is half length of previous
 
@@ -49,7 +49,8 @@ export class FractalArmsComponent implements OnInit {
   }
 
   private setArmLength() {
-    this.totalArmLength = Math.min(window.innerHeight, window.innerWidth) / 2; // radius of shortest window dimension
+    this.totalArmLength = Math.min(window.innerHeight, window.innerWidth) / 2 - 10;
+    // radius of shortest window dimension - a little padding
   }
 
   private rotateArms(p) {
