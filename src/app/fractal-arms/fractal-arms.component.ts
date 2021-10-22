@@ -11,7 +11,7 @@ export class FractalArmsComponent implements OnInit {
   totalArms: number = 64;
   armSegments: number = 100;
 
-  totalArmLength: number = 250; // each segment is half length of previous
+  totalArmLength: number = 100; // each segment is half length of previous
 
   theta: number = 0; // rotation of the animation
   rotationSpeed: number = 0.01;
@@ -19,10 +19,11 @@ export class FractalArmsComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    this.setArmLength();
     this.makeCanvas();
   }
 
-  makeCanvas() {
+  private makeCanvas() {
     return new p5((p) => {
 
       p.preload = () => {
@@ -42,8 +43,13 @@ export class FractalArmsComponent implements OnInit {
 
       p.windowResized = () => {
         p.resizeCanvas(window.innerWidth, window.innerHeight);
+        this.setArmLength();
       }
     });
+  }
+
+  private setArmLength() {
+    this.totalArmLength = Math.min(window.innerHeight, window.innerWidth) / 2; // radius of shortest window dimension
   }
 
   private rotateArms(p) {
@@ -73,7 +79,9 @@ export class FractalArmsComponent implements OnInit {
       p.push()
       // p.rotate(this.theta * ((j % 2 == 0) ? 1 : -1)) // scrunchy arms
       p.rotate(this.theta) // fractal rotate arms
-      let armLength = this.totalArmLength / ((j + 1) * 2)
+
+      // let armLength = this.totalArmLength / ((j + 1) * 2)
+      let armLength = this.totalArmLength / Math.pow(2, j + 1)
       p.line(0, 0, 0, -armLength);
       p.translate(0, -armLength);
     }
