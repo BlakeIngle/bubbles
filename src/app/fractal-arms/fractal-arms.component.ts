@@ -8,13 +8,15 @@ import * as p5 from 'p5';
 })
 export class FractalArmsComponent implements OnInit {
 
-  totalArms: number = 80;
-  armSegments: number = 40;
+  totalArms: number = 40;
+  armSegments: number = 20;
 
   totalArmLength: number = 100; // each segment is half length of previous
 
   theta: number = 0; // rotation of the animation
   rotationSpeed: number = 0.01;
+
+  destroy;
 
   constructor() { }
 
@@ -23,8 +25,14 @@ export class FractalArmsComponent implements OnInit {
     this.makeCanvas();
   }
 
+  ngOnDestroy() {
+    this.destroy();
+  }
+
   private makeCanvas() {
     return new p5((p) => {
+
+      this.destroy = p.remove;
 
       p.preload = () => {
 
