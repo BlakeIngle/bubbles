@@ -7,13 +7,15 @@ import { AppComponent } from './app.component';
 import { BubblesComponent } from './bubbles/bubbles.component';
 import { CircleWarpComponent } from './circle-warp/circle-warp.component';
 import { HomePageComponent } from './home-page/home-page.component';
+import { FractalArmsComponent } from './fractal-arms/fractal-arms.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BubblesComponent,
     CircleWarpComponent,
-    HomePageComponent
+    HomePageComponent,
+    FractalArmsComponent
   ],
   imports: [
     BrowserModule,
