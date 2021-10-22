@@ -24,14 +24,22 @@ export class CircleWarpComponent implements OnInit {
   smallTheta: number = 0; // rotation of smallest layer
   largeTheta: number = 0; // rotation of largest layer
 
+  p;
+
   constructor() { }
 
   ngOnInit(): void {
     this.makeCanvas();
   }
 
+  ngOnDestroy() {
+    this.p.remove();
+  }
+
   makeCanvas() {
     return new p5((p) => {
+
+      this.p = p;
 
       p.preload = () => {
 

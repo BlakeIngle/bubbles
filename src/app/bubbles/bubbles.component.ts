@@ -26,9 +26,15 @@ export class BubblesComponent implements OnInit {
   imgWidth: any; // actual width of img file
   imgHeight: any; //  ||   height   ||
 
+  destroy;
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy() {
+    this.destroy();
   }
 
   onFileChange(event) {
@@ -65,6 +71,8 @@ export class BubblesComponent implements OnInit {
 
   makeCanvas(img) {
     return new p5((p) => {
+
+      this.destroy = p.remove;
 
       p.preload = () => {
         this.loadedImage = p.loadImage(img);
