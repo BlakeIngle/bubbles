@@ -131,7 +131,7 @@ export class BubblesComponent implements OnInit {
 
   addNewCircles(p) {
 
-    let newEachFrame = 100; // smaller number = bigger circles
+    let newEachFrame = 10; // smaller number = bigger circles
     let maxAttempts = 10000; // more attempts = less empty space
     let attempt = 1;
 

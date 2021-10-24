@@ -8,6 +8,7 @@ import { BubblesComponent } from './bubbles/bubbles.component';
 import { CircleWarpComponent } from './circle-warp/circle-warp.component';
 import { HomePageComponent } from './home-page/home-page.component';
 import { FractalArmsComponent } from './fractal-arms/fractal-arms.component';
+import { GlassTrianglesComponent } from './glass-triangles/glass-triangles.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { FractalArmsComponent } from './fractal-arms/fractal-arms.component';
     BubblesComponent,
     CircleWarpComponent,
     HomePageComponent,
-    FractalArmsComponent
+    FractalArmsComponent,
+    GlassTrianglesComponent
   ],
   imports: [
     BrowserModule,
