@@ -9,6 +9,8 @@ import { CircleWarpComponent } from './circle-warp/circle-warp.component';
 import { HomePageComponent } from './home-page/home-page.component';
 import { FractalArmsComponent } from './fractal-arms/fractal-arms.component';
 import { GlassTrianglesComponent } from './glass-triangles/glass-triangles.component';
+import { SpirographComponent } from './spirograph/spirograph.component';
+import { EpicycloidComponent } from './epicycloid/epicycloid.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { GlassTrianglesComponent } from './glass-triangles/glass-triangles.compo
     CircleWarpComponent,
     HomePageComponent,
     FractalArmsComponent,
-    GlassTrianglesComponent
+    GlassTrianglesComponent,
+    SpirographComponent,
+    EpicycloidComponent
   ],
   imports: [
     BrowserModule,
